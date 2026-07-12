@@ -175,6 +175,8 @@
             flex-wrap:wrap;gap:12px;padding-top:20px;border-top:1px solid #141b2d;
             font-size:13px;color:#4a5578
         }
+        .views-wrap{display:inline-flex;align-items:center;gap:6px}
+        .views-badge{vertical-align:middle;height:18px;border-radius:4px}
 
         /* Status */
         .status-bar{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:-12px;margin-bottom:12px}
@@ -315,6 +317,7 @@
         <div class="footer-bottom">
             <span>© {{YEAR}} AI工具导航 · 聚合 · 评测 · 测评</span>
             <span>数据来源：Arxiv / HackerNews 自动采集 | <a href="#">隐私政策</a></span>
+            <span class="views-wrap">页面访问量：{{PAGE_VIEWS}}</span>
         </div>
     </div>
 </footer>

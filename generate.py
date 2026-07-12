@@ -17,6 +17,15 @@ BASE_DIR = Path(__file__).parent.resolve()
 TEMPLATE_PATH = BASE_DIR / "template.html"
 OUTPUT_PATH = BASE_DIR / "index.html"
 
+# ── 页面浏览统计徽章（免费 · 隐私友好 · 与 GitHub 仓库绑定）──
+# hits.sh 提供纯 SVG 访问计数器，无需注册/后端；中文 label 需 URL 编码。
+_VIEWS_LABEL = "页面浏览"
+PAGE_VIEWS_BADGE = (
+    f'<img class="views-badge" alt="页面浏览量" referrerpolicy="no-referrer" '
+    f'src="https://hits.sh/github.com/uszhu1981-beep/ai-tools-nav.svg'
+    f'?label={_VIEWS_LABEL}&color=6c8cff" />'
+)
+
 # ── 工具数据（稳定内置） ──────────────────────────────────────────
 TOOLS = [
     # Chat
@@ -162,7 +171,7 @@ WEEKLY_DATASET = [
     {
         "title": "🔬 开源模型突破周",
         "scores": {"整体效率": 88, "工具适配": 90, "创意产出": 87, "满意度": 89},
-        "detail": "DeepSeek V4 / Llama 4 / Qwen 3 等开源模型在本周密集发布，本地部署推理成本降至新低。小团队自建 AI 工作流的门槛正在快速消失。",
+        "detail": "截至 2026-07，DeepSeek V4 Pro / V3.2、Qwen 3.7 Max、Llama 4 Scout & Maverick、Kimi K2.6、GLM-5.1、Gemma 4、Mistral Large 3 等开放权重模型密集迭代，OpenAI 也推出 GPT-OSS 加入开源阵营。本地部署推理成本降至新低，小团队自建 AI 工作流的门槛正在快速消失。",
     },
     {
         "title": "🎥 多模态爆发周",
@@ -649,6 +658,7 @@ def build_page(reviews, week_data, week_range_str, week_str, generated_at, deep_
         "{{GENERATED_AT}}": generated_at,
         "{{YEAR}}": str(now.year),
         "{{TOOLS_JSON}}": tools_json,
+        "{{PAGE_VIEWS}}": PAGE_VIEWS_BADGE,
     }
 
     for placeholder, value in replacements.items():
