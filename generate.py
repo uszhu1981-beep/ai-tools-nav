@@ -18,12 +18,13 @@ TEMPLATE_PATH = BASE_DIR / "template.html"
 OUTPUT_PATH = BASE_DIR / "index.html"
 
 # ── 页面浏览统计徽章（免费 · 隐私友好 · 与 GitHub 仓库绑定）──
-# hits.sh 提供纯 SVG 访问计数器，无需注册/后端；中文 label 需 URL 编码。
+# hits.sh 提供纯 SVG 访问计数器，无需注册/后端；中文 label 必须 URL 编码。
+from urllib.parse import quote as _urlquote
 _VIEWS_LABEL = "页面浏览"
 PAGE_VIEWS_BADGE = (
     f'<img class="views-badge" alt="页面浏览量" referrerpolicy="no-referrer" '
     f'src="https://hits.sh/github.com/uszhu1981-beep/ai-tools-nav.svg'
-    f'?label={_VIEWS_LABEL}&color=6c8cff" />'
+    f'?label={_urlquote(_VIEWS_LABEL)}&color=6c8cff" />'
 )
 
 # ── 工具数据（稳定内置） ──────────────────────────────────────────
