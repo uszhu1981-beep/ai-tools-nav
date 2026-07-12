@@ -1,0 +1,21 @@
+# ── Python 缓存 ──
+__pycache__/
+*.pyc
+*.pyo
+
+# ── 私有微信推送脚本（含本地账号路径，不公开）──
+send_wechat*.py
+push_930.py
+retry_*.py
+resend_*.py
+dump_ready.py
+enrich_news.py
+
+# ── 推送数据 / 日志（非站点内容）──
+wechat_daily.json
+wechat_push_*.txt
+wechat_push_log.txt
+xiaohongshu_candidates.json
+
+# ── 无关素材 ──
+steel_dance/

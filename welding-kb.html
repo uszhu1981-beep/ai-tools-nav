@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>焊接工艺知识库 · Welding Knowledge Base</title>
+<style>
+  :root {
+    --primary: #7c3aed;
+    --primary-light: #a78bfa;
+    --bg: #0f0f1a;
+    --card: #1a1a2e;
+    --card-hover: #222244;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --accent: #f59e0b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --border: #2d2d4a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh;
+  }
+  /* Layout */
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 280px; background: var(--card); border-right: 1px solid var(--border);
+    padding: 24px 16px; display: flex; flex-direction: column; flex-shrink: 0;
+  }
+  .main { flex: 1; padding: 24px 32px; overflow-y: auto; max-height: 100vh; }
+  @media (max-width: 768px) {
+    .app { flex-direction: column; }
+    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 200px; overflow-y: auto; }
+    .main { padding: 16px; max-height: none; }
+  }
+  /* Brand */
+  .brand { font-size: 20px; font-weight: 700; color: var(--primary-light); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .brand small { font-size: 12px; color: var(--text-dim); font-weight: 400; }
+  .subtitle { font-size: 12px; color: var(--text-dim); margin-bottom: 24px; }
+  /* Sidebar nav */
+  .nav-section { margin-bottom: 8px; }
+  .nav-title { font-size: 11px; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 8px; padding: 0 8px; }
+  .nav-item {
+    display: block; padding: 8px 12px; border-radius: 8px; cursor: pointer;
+    font-size: 14px; color: var(--text-dim); transition: all .15s;
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: var(--card-hover); color: var(--text); }
+  .nav-item.active { background: var(--primary); color: white; }
+  .nav-item .count { float: right; font-size: 11px; opacity: .6; }
+  /* Search */
+  .search-box {
+    width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card); color: var(--text); font-size: 14px; outline: none; margin-bottom: 16px;
+    transition: border .2s;
+  }
+  .search-box:focus { border-color: var(--primary); }
+  /* Cards */
+  .kb-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .kb-title { font-size: 24px; font-weight: 700; }
+  .kb-title span { color: var(--text-dim); font-weight: 400; font-size: 14px; }
+  .import-area {
+    border: 2px dashed var(--border); border-radius: 12px; padding: 24px;
+    text-align: center; margin-bottom: 20px; transition: all .2s; cursor: pointer;
+  }
+  .import-area:hover { border-color: var(--primary); background: rgba(124,58,237,.05); }
+  .import-area textarea {
+    width: 100%; min-height: 120px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--card); color: var(--text); padding: 12px; font-size: 14px;
+    resize: vertical; outline: none; margin-top: 12px;
+  }
+  .import-area textarea:focus { border-color: var(--primary); }
+  .btn {
+    padding: 8px 20px; border-radius: 8px; border: none; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: #6d28d9; }
+  .btn-sm { padding: 4px 12px; font-size: 12px; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary-light); }
+  .btn-danger { background: var(--danger); color: white; }
+  .btn-danger:hover { background: #dc2626; }
+  .stats { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat-card {
+    background: var(--card); border-radius: 10px; padding: 16px 20px; flex: 1; min-width: 120px;
+    border: 1px solid var(--border);
+  }
+  .stat-card .num { font-size: 28px; font-weight: 700; color: var(--primary-light); }
+  .stat-card .label { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+  /* Article list */
+  .article-grid { display: grid; gap: 12px; }
+  .article-card {
+    background: var(--card); border-radius: 10px; padding: 16px 20px;
+    border: 1px solid var(--border); cursor: pointer; transition: all .15s;
+  }
+  .article-card:hover { background: var(--card-hover); border-color: var(--primary); transform: translateY(-1px); }
+  .article-card .title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .article-card .title .tag {
+    display: inline-block; font-size: 10px; padding: 1px 8px; border-radius: 4px;
+    margin-left: 8px; vertical-align: middle;
+  }
+  .tag-weld { background: rgba(245,158,11,.15); color: var(--accent); }
+  .tag-glue { background: rgba(16,185,129,.15); color: var(--success); }
+  .tag-robot { background: rgba(124,58,237,.15); color: var(--primary-light); }
+  .tag-fault { background: rgba(239,68,68,.15); color: var(--danger); }
+  .article-card .meta { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+  .article-card .preview { font-size: 13px; color: var(--text-dim); margin-top: 8px; line-height: 1.5; }
+  .highlight { background: rgba(245,158,11,.3); padding: 0 2px; border-radius: 2px; }
+  /* Detail view */
+  .detail-view {
+    background: var(--card); border-radius: 12px; padding: 24px; border: 1px solid var(--border);
+  }
+  .detail-view .back { cursor: pointer; color: var(--primary-light); font-size: 14px; margin-bottom: 16px; display: inline-block; }
+  .detail-view .back:hover { text-decoration: underline; }
+  .detail-view h2 { font-size: 22px; margin-bottom: 12px; }
+  .detail-view .content { line-height: 1.8; font-size: 14px; color: var(--text); }
+  .detail-view .content h3 { font-size: 16px; margin: 20px 0 8px; color: var(--primary-light); }
+  .detail-view .content ul { padding-left: 20px; margin: 8px 0; }
+  .detail-view .content li { margin-bottom: 4px; }
+  .detail-view .content table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  .detail-view .content th, .detail-view .content td {
+    border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+  }
+  .detail-view .content th { background: rgba(124,58,237,.1); color: var(--primary-light); }
+  /* QA section */
+  .qa-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .qa-section h3 { font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .qa-input { display: flex; gap: 8px; }
+  .qa-input input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 14px; outline: none; }
+  .qa-input input:focus { border-color: var(--primary); }
+  .qa-answer { margin-top: 12px; padding: 16px; background: var(--bg); border-radius: 8px; font-size: 14px; line-height: 1.7; display: none; }
+  .qa-answer.show { display: block; }
+  .qa-answer .loading { color: var(--text-dim); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+  /* Empty state */
+  .empty { text-align: center; padding: 60px 20px; color: var(--text-dim); }
+  .empty .icon { font-size: 48px; margin-bottom: 12px; }
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 8px;
+    background: var(--success); color: white; font-size: 14px; z-index: 100;
+    opacity: 0; transform: translateY(20px); transition: all .3s;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">⚡ 焊接知识库 <small>v1.0</small></div>
+    <div class="subtitle">WeldingHome · 工艺技术百科</div>
+
+    <input class="search-box" id="globalSearch" placeholder="🔍 全文搜索..." oninput="searchArticles(this.value)">
+
+    <div class="nav-section">
+      <div class="nav-title">📂 分类浏览</div>
+      <button class="nav-item active" data-cat="all" onclick="filterBy('all',this)">📋 全部文章 <span class="count" id="countAll">0</span></button>
+      <button class="nav-item" data-cat="welding" onclick="filterBy('welding',this)">🔥 点焊工艺 <span class="count" id="countWelding">0</span></button>
+      <button class="nav-item" data-cat="gluing" onclick="filterBy('gluing',this)">🧪 涂胶工艺 <span class="count" id="countGluing">0</span></button>
+      <button class="nav-item" data-cat="fds" onclick="filterBy('fds',this)">🔩 FDS/流钻 <span class="count" id="countFds">0</span></button>
+      <button class="nav-item" data-cat="robot" onclick="filterBy('robot',this)">🤖 机器人 <span class="count" id="countRobot">0</span></button>
+      <button class="nav-item" data-cat="quality" onclick="filterBy('quality',this)">📊 质量标准 <span class="count" id="countQuality">0</span></button>
+    </div>
+
+    <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border);">
+      <button class="nav-item" onclick="toggleImport()" style="color: var(--success);">📥 + 导入知识</button>
+      <div style="font-size: 11px; color: var(--text-dim); padding: 8px 12px; line-height: 1.5;">
+        知识来源：WeldingHome 公众号<br>
+        数据全部存储于浏览器本地
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main" id="mainContent">
+    <div class="kb-header">
+      <div class="kb-title">📚 知识库 <span id="resultCount"></span></div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-outline btn-sm" onclick="toggleImport()">📥 导入</button>
+        <button class="btn btn-outline btn-sm" onclick="exportData()">💾 导出</button>
+      </div>
+    </div>
+
+    <!-- Import area -->
+    <div class="import-area" id="importArea" style="display:none;">
+      <div style="font-weight: 600; margin-bottom: 8px;">📥 导入知识</div>
+      <div style="font-size: 13px; color: var(--text-dim); margin-bottom: 12px;">
+        粘贴文章内容，或输入标题+正文。每篇用 <code>---</code> 分隔。
+      </div>
+      <textarea id="importText" placeholder="标题：焊接直径与焊核直径计算&#10;分类：quality&#10;&#10;【基本概念】&#10;- 焊接直径(dp) = 2 * tmin + 3&#10;- 焊核直径(dL) 在截面处测量...&#10;&#10;---&#10;&#10;标题：涂胶工艺调试经验&#10;分类：gluing&#10;&#10;【工装设计】&#10;- 涂胶台角度建议≤30°..."></textarea>
+      <div style="margin-top: 12px; display: flex; gap: 8px; justify-content: center;">
+        <button class="btn btn-primary" onclick="importArticles()">✅ 导入</button>
+        <button class="btn btn-outline" onclick="toggleImport()">取消</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats" id="statsRow">
+      <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">📄 知识条目</div></div>
+      <div class="stat-card"><div class="num" id="statCats">0</div><div class="label">📂 分类数</div></div>
+      <div class="stat-card"><div class="num" id="statChars">0</div><div class="label">📝 总字数</div></div>
+    </div>
+
+    <!-- Article grid -->
+    <div class="article-grid" id="articleGrid"></div>
+
+    <!-- Detail view (hidden) -->
+    <div class="detail-view" id="detailView" style="display:none;"></div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ======================== DATA ========================
+const STORAGE_KEY = 'welding_kb_v1';
+let articles = [];
+let currentFilter = 'all';
+let currentSearch = '';
+let currentArticle = null;
+
+// Default articles (from WeldingHome knowledge)
+const DEFAULT_ARTICLES = [
+  {
+    id: 'a1', title: '涂胶工艺调试要点', category: 'gluing',
+    tags: ['涂胶', '机器人', '参数'],
+    content: `## 工装设计阶段
+- **涂胶台角度**建议 ≤ 30°，过大则胶条易脱落
+- 涂胶胎/抓手定位精度和足够支撑，避免波动剐蹭胶嘴
+
+## 涂胶编程要点
+- 涂胶程序(glue on/off)后一点为涂胶开始/结束位置
+- 涂胶轨迹开关胶信号前、后第一个过渡点必须为 **LIN**
+- 开胶信号前过渡点：在开胶点正前方不能过高
+- 关胶信号后过渡点：在关胶点顺延的后方
+- 采用**拉涂模式**（非推涂），胶枪倾斜角度 3°
+- **挤涂模式**下胶嘴距离 = 胶段直径，**喷涂模式**下 = 3-8mm
+- LIN 必须有 CONT，两点不能在同一个位置
+- 角度变化大时，涂胶速度从快到慢`
+  },
+  {
+    id: 'a2', title: '焊接直径与焊核直径计算', category: 'quality',
+    tags: ['焊接', '质量标准', '计算'],
+    content: `## 基本概念
+- "焊点直径"非专业名词，考核指标是 **焊接直径(dp)** 和 **焊核直径(dL)**
+
+## 焊接直径 dp 计算公式
+- **dp = 2 × tmin + 3**（部分厂商用 3.8 或 4.2 系数）
+- tmin = 两层板中较薄的一层厚度
+
+## 焊核直径 dL
+- 在截面处测量
+- 两层板连接：只有一个焊接直径 & 焊核直径值
+- 三层板连接：计算方式参考截面测量
+- 部分制造商按车身部位/安全等级标注焊核参考值`
+  },
+  {
+    id: 'a3', title: '点焊机器人自动重焊功能配置', category: 'robot',
+    tags: ['机器人', '点焊', '重焊', '配置'],
+    content: `## 功能原理
+- 焊点报错后，机器人判断错误类型，再次触发焊接
+
+## 关键变量
+- **ERR_REPAT**：触发重焊的报错类型
+  - #NON = 关闭（默认）
+  - #Q_STOP = Q-Stop报错后重焊
+  - #NO_Q_STOP = 非Q-Stop报错后重焊
+  - #WLD_ERROR_ALL = 所有焊接错误都重焊
+- **MAX_REPEAT_AFTER_ERR**：允许重复焊接次数（默认0）
+
+## 配置步骤
+1. 登录专家权限，打开变量查询/赋值界面
+2. ERR_REPAT 由 #NON 赋值改为 #Q_STOP
+3. MAX_REPEAT_AFTER_ERR 由 0 改为 1
+4. 程序逻辑：Reset fault and Reweld信号 true → 复位错误并再次焊接`
+  },
+  {
+    id: 'a4', title: 'FDS/流钻设备故障排查：超出最大深度', category: 'fds',
+    tags: ['FDS', '流钻', '故障', '深度传感器'],
+    content: `## 故障现象
+- WEBER 流钻设备频繁报"超出最大深度"
+- 外观无异常，深度传感器接线无松动
+
+## 排查过程
+1. 检查刀杆无明显磨损
+2. 深度零位标定补偿值 26.2 → 24.6mm（变小1.6mm）
+3. 再次标定 24.6 → 23.1mm（进一步变小1.5mm）
+4. 初步怀疑深度传感器异常
+5. 更换深度传感器后仍然无效
+6. 拆开机械结构检查磁环 → **磁环碎裂**（根本原因）
+7. 更换磁环 → 重新深度零点标定 → 恢复正常
+
+## 故障分析逻辑
+引起深度/位置异常的两大方向：
+- **硬件损坏**影响刀杆和支架位置
+- **测量环节异常**反馈（本案例属于此类）
+
+## 磁性位置传感器原理
+- 非接触式监测缸体活塞上磁环位置
+- 内置霍尔效应元件探测磁场变化
+- 输出连续(0-10V)模拟信号 → 转换为mm
+- 分辨率 ≥ 0.05mm，线性误差 ≤ 0.3mm，重复精度 0.1mm`
+  },
+  {
+    id: 'a5', title: 'FANUC机器人World Frame异常处理', category: 'robot',
+    tags: ['FANUC', '机器人', '坐标系', 'World Frame'],
+    content: `## 问题场景
+- 车间量产阶段发现机器人工具坐标和车身坐标偏差很大
+- 检查发现：通用世界坐标系与实际不符
+- 根本原因：机器人的多个轴在机械位置距离零点刻度线相差20mm的情况下进行了零点标定
+
+## 解决方案思路
+1. 在程序里找一个特征明显的参考点（如工件尖角），记录当前错误坐标值
+2. 正确标零后，手动移动机器人到同一个物理位置，记录新的正确坐标值
+3. 计算差值（ΔX, ΔY, ΔZ, ΔW, ΔP, ΔR）
+4. 在示教器坐标系设置界面，修改当前用户坐标系，将差值加进去
+5. 核心问题：机器人系统能否根据两次零点对应的编码器差值，判断世界坐标差异然后整体偏移轨迹？`
+  },
+  {
+    id: 'a6', title: '焊点压痕深度判定标准', category: 'quality',
+    tags: ['压痕', '质量标准', '焊点'],
+    content: `## 压痕深度判定标准
+- **外观要求高**的焊点，车辆设计时可能给出相应指标
+- **无特殊要求**的焊点，规范为：焊接后的焊点厚度不能小于焊点总板层厚度的 **60%**
+- 即 **压痕深度 ≤ 板层总厚度的 40%**`
+  },
+  {
+    id: 'a7', title: '点焊飞溅优化方法论', category: 'welding',
+    tags: ['飞溅', '优化', '点焊', '参数'],
+    content: `## 核心理念
+- 优化必须建立在收集飞溅数据基础上，是**针对性**优化，不是"面对性"优化
+- 优化需要多批次循环
+- 对优化发现的问题整理归档
+
+## 数据收集三原则
+1. 飞溅数据统计必须是**多次的**，不能单一次
+2. 每次统计焊点焊接次数尽量 **≥ 20次**
+3. 飞溅数据分类整理：按**单个焊点**、按**焊枪**、按**区域**
+
+## 数据分析三层次
+1. 单个焊点：通过多次飞溅率波动幅度分析不稳定因素
+2. 焊枪维度：多车型共线时，某焊枪对所有车型飞溅都有变化 → 检查设备工作状态
+3. 区域维度：了解不同材质板材及搭接特性
+
+## 优化筛选逻辑
+1. 初期只选择 **5%** 最糟糕的飞溅焊点优化
+2. 每个区域 **5%-10%** 最糟糕焊点，先进行两轮
+3. 然后主要针对参数优化，也进行两轮
+4. 筛选出参数优化后飞溅仍不下降的焊点，参照白车身进行原因分析
+5. 建议每个焊点建立档案`
+  },
+  {
+    id: 'a8', title: '飞溅根因分析：四大维度', category: 'welding',
+    tags: ['飞溅', '根因', '点焊', 'Rexroth'],
+    content: `## 飞溅根因四大维度
+### 1. 钣金间隙过大
+- 冲压精度不良 → 板间间隙大 → 焊枪压力被抵消 → 接触电阻↑ → 极速升温 → 塑性环未闭合 → 爆破飞溅
+
+### 2. 结构胶高温气化
+- 胶水溢出阻断导电路 → 局部电流密度过高 → 胶热分解气化 → "爆燃"喷射
+
+### 3. 双热成型钢+单层薄板三层板热失衡
+- 热量富集高电阻率界面 → 薄板不熔化 → 加电流 → 过热飞溅
+
+### 4. 焊枪对中不良+压力漂移
+- 偏心挤压/欠压 → 早期喷射飞溅
+
+## Rexroth UIR自适应控制
+- 1kHz中频逆变+PSG6000 → 毫秒级V/I采样 → 动态电阻计算 → 闭环跟踪参考曲线
+- Q-Module：PSF稳定性因子+UIP质量因子 → 100%在线追溯
+- **参考曲线偏离机理**：电极帽磨损+板材波动 → 实测电阻偏低 → 误判"能量不足" → 过量补偿 → 越补越飞溅
+- **对策**：清除旧曲线 → 正常状态下重新生成基准曲线`
+  },
+  {
+    id: 'a9', title: '机器人涂胶编程详细参数', category: 'gluing',
+    tags: ['涂胶', '参数', '机器人', '编程'],
+    content: `## 详细编程参数
+### 涂胶速度
+- 正常涂胶速度：50-200 mm/s
+- 角度变化大时：从快到慢过渡
+
+### 胶枪姿态
+- 倾斜角度：3°（拉涂模式）
+- 与工件表面保持恒定距离
+
+### 胶嘴距离
+- **挤涂模式**：胶嘴距离 = 胶段直径
+- **喷涂模式**：胶嘴距离 = 3-8mm
+
+### 开关胶控制
+- 开胶信号前过渡点：在开胶点正前方
+- 关胶信号后过渡点：在关胶点顺延的后方
+- 过渡点高度不能过高，避免拉丝
+
+### 轨迹要求
+- 开关胶信号前后第一个过渡点必须为 **LIN**
+- LIN 必须有 **CONT** 指令
+- 两点不能在同一个位置`
+  },
+  {
+    id: 'a10', title: '焊接参数与飞溅关系速查表', category: 'welding',
+    tags: ['飞溅', '参数', '速查', '焊接'],
+    content: `## 参数调整与飞溅关系
+
+| 参数方向 | 飞溅减少 | 飞溅增加 | 注意事项 |
+|---------|---------|---------|---------|
+| 焊接电流 | ↓ 降低 0.5-1kA | ↑ 升高 | 过低会导致焊核不足 |
+| 电极压力 | ↑ 增大 0.3-0.5kN | ↓ 减小 | 压力过大可能压溃板材 |
+| 焊接时间 | ↓ 缩短 1-2周波 | ↑ 延长 | 控制在合理范围 |
+| 电极帽状态 | ✅ 良好修磨 | ❌ 磨损/变形 | 定期检查更换 |
+| 板材间隙 | ✅ <0.5mm | ❌ >1mm | 冲压件质量控制 |
+
+## 飞溅率等级参考
+- **< 3%** — 优秀
+- **3-8%** — 可接受，需监控
+- **8-15%** — 需要优化
+- **> 15%** — 必须立即处理`
+  },
+];
+
+// ======================== INIT ========================
+function init() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try { articles = JSON.parse(saved); } catch(e) { articles = []; }
+  }
+  if (articles.length === 0) {
+    articles = DEFAULT_ARTICLES.map(a => ({...a, id: 'a' + Date.now() + Math.random().toString(36).substr(2,4)}));
+    saveData();
+  }
+  render();
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+}
+
+// ======================== RENDER ========================
+function render() {
+  updateCounts();
+  updateStats();
+  let filtered = getFiltered();
+  document.getElementById('resultCount').textContent = filtered.length ? `（${filtered.length} 篇）` : '';
+  renderList(filtered);
+}
+
+function updateCounts() {
+  const cats = {};
+  articles.forEach(a => { cats[a.category] = (cats[a.category] || 0) + 1; });
+  document.getElementById('countAll').textContent = articles.length;
+  const catMap = {welding:'countWelding', gluing:'countGluing', fds:'countFds', robot:'countRobot', quality:'countQuality'};
+  Object.keys(catMap).forEach(k => {
+    document.getElementById(catMap[k]).textContent = cats[k] || 0;
+  });
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = articles.length;
+  const cats = new Set(articles.map(a => a.category));
+  document.getElementById('statCats').textContent = cats.size;
+  const chars = articles.reduce((s, a) => s + (a.content || '').length, 0);
+  document.getElementById('statChars').textContent = chars.toLocaleString();
+}
+
+function getFiltered() {
+  let result = [...articles];
+  if (currentFilter !== 'all') {
+    result = result.filter(a => a.category === currentFilter);
+  }
+  if (currentSearch.trim()) {
+    const q = currentSearch.trim().toLowerCase();
+    result = result.filter(a =>
+      (a.title || '').toLowerCase().includes(q) ||
+      (a.content || '').toLowerCase().includes(q) ||
+      (a.tags || []).some(t => t.toLowerCase().includes(q))
+    );
+  }
+  return result;
+}
+
+function renderList(items) {
+  const grid = document.getElementById('articleGrid');
+  if (items.length === 0) {
+    grid.innerHTML = `<div class="empty"><div class="icon">📭</div><div>没有找到匹配的知识条目</div></div>`;
+    return;
+  }
+  grid.innerHTML = items.map(a => {
+    const catLabel = {welding:'🔥点焊', gluing:'🧪涂胶', fds:'🔩FDS', robot:'🤖机器人', quality:'📊质量'}[a.category] || a.category;
+    const preview = (a.content || '').replace(/<[^>]+>/g,'').substring(0,120);
+    const q = currentSearch.trim();
+    let highlighted = preview;
+    if (q) {
+      const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi');
+      highlighted = preview.replace(re, m => `<span class="highlight">${m}</span>`);
+    }
+    return `<div class="article-card" onclick="showDetail('${a.id}')">
+      <div class="title">${a.title} <span class="tag tag-${a.category}">${catLabel}</span></div>
+      <div class="meta">🏷 ${(a.tags||[]).join(' · ')}</div>
+      <div class="preview">${highlighted}</div>
+    </div>`;
+  }).join('');
+}
+
+// ======================== DETAIL ========================
+function showDetail(id) {
+  const a = articles.find(x => x.id === id);
+  if (!a) return;
+  currentArticle = a;
+  document.getElementById('articleGrid').style.display = 'none';
+  document.getElementById('detailView').style.display = 'block';
+  const catLabel = {welding:'🔥点焊', gluing:'🧪涂胶', fds:'🔩FDS', robot:'🤖机器人', quality:'📊质量'}[a.category] || a.category;
+  document.getElementById('detailView').innerHTML = `
+    <div class="back" onclick="backToList()">← 返回知识列表</div>
+    <h2>${a.title} <span class="tag tag-${a.category}">${catLabel}</span></h2>
+    <div class="meta" style="margin-bottom:16px">🏷 ${(a.tags||[]).join(' · ')}</div>
+    <div class="content">${renderContent(a.content)}</div>
+    <div class="qa-section">
+      <h3>🤖 AI 智能问答</h3>
+      <div class="qa-input">
+        <input id="qaInput" placeholder="输入问题，例如：飞溅怎么优化？">
+        <button class="btn btn-primary" onclick="askQuestion()">提问</button>
+      </div>
+      <div class="qa-answer" id="qaAnswer"></div>
+    </div>`;
+}
+
+function renderContent(md) {
+  if (!md) return '';
+  let html = md;
+  // Headers
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^# (.+)$/gm, '<h3 style="color:var(--accent);font-size:18px">$1</h3>');
+  // Bold
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--primary-light)">$1</strong>');
+  // Lists
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+  // Tables
+  html = html.replace(/\|(.+)\|/g, (m) => {
+    if (m.includes('---')) return '<hr style="border-color:var(--border);margin:4px 0">';
+    const cells = m.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('');
+    return `<tr>${cells}</tr>`;
+  });
+  html = html.replace(/(<tr>.*<\/tr>)/s, '<table>$1</table>');
+  // Line breaks
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+  return '<p>' + html + '</p>';
+}
+
+function backToList() {
+  document.getElementById('articleGrid').style.display = '';
+  document.getElementById('detailView').style.display = 'none';
+  currentArticle = null;
+}
+
+// ======================== FILTER & SEARCH ========================
+function filterBy(cat, btn) {
+  document.querySelectorAll('.nav-item[data-cat]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  currentFilter = cat;
+  render();
+}
+
+function searchArticles(q) {
+  currentSearch = q;
+  render();
+}
+
+// ======================== IMPORT ========================
+function toggleImport() {
+  const area = document.getElementById('importArea');
+  area.style.display = area.style.display === 'none' ? 'block' : 'none';
+}
+
+function importArticles() {
+  const text = document.getElementById('importText').value.trim();
+  if (!text) { showToast('请输入要导入的内容'); return; }
+  const blocks = text.split(/^---$/m).filter(b => b.trim());
+  let added = 0;
+  blocks.forEach(block => {
+    const lines = block.trim().split('\n');
+    let title = '未命名条目';
+    let category = 'welding';
+    let content = block;
+    let tags = [];
+    // Try to parse header
+    const titleMatch = block.match(/^标题[：:]\s*(.+)/m);
+    const catMatch = block.match(/^分类[：:]\s*(.+)/m);
+    const tagMatch = block.match(/^标签[：:]\s*(.+)/m);
+    if (titleMatch) title = titleMatch[1].trim();
+    if (catMatch) {
+      const c = catMatch[1].trim().toLowerCase();
+      if (['welding','gluing','fds','robot','quality'].includes(c)) category = c;
+    }
+    if (tagMatch) tags = tagMatch[1].split(/[,，、\s]+/).filter(t => t.trim());
+    // Remove header lines from content
+    content = block.replace(/^标题[：:].+$/m, '').replace(/^分类[：:].+$/m, '').replace(/^标签[：:].+$/m, '').trim();
+    if (!tags.length) tags = [title.substring(0,4)];
+    articles.push({
+      id: 'a' + Date.now() + Math.random().toString(36).substr(2,4),
+      title, category, tags, content
+    });
+    added++;
+  });
+  if (added > 0) {
+    saveData();
+    render();
+    document.getElementById('importText').value = '';
+    toggleImport();
+    showToast(`✅ 成功导入 ${added} 篇知识`);
+  }
+}
+
+// ======================== EXPORT ========================
+function exportData() {
+  const data = JSON.stringify(articles, null, 2);
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'welding-knowledge-base.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ 数据已导出');
+}
+
+// ======================== AI QA ========================
+// Uses Hermes Agent's own intelligence for Q&A
+function askQuestion() {
+  const input = document.getElementById('qaInput');
+  const q = input.value.trim();
+  if (!q) return;
+  const answer = document.getElementById('qaAnswer');
+  answer.className = 'qa-answer show';
+  answer.innerHTML = '<div class="loading">🤔 正在基于知识库思考...</div>';
+  
+  // Find relevant articles
+  const qLower = q.toLowerCase();
+  const relevant = articles.filter(a =>
+    (a.title || '').toLowerCase().includes(qLower) ||
+    (a.content || '').toLowerCase().includes(qLower) ||
+    (a.tags || []).some(t => t.toLowerCase().includes(qLower))
+  );
+  
+  // Build context from relevant articles
+  let context = '';
+  if (relevant.length > 0) {
+    context = '相关知识点：\n\n' + relevant.slice(0, 3).map(a => 
+      `[${a.title}] ${a.content.substring(0, 500)}`
+    ).join('\n\n---\n\n');
+  }
+  
+  // Generate answer using local matching + smart response
+  const answerText = generateAnswer(q, relevant);
+  setTimeout(() => {
+    answer.innerHTML = answerText;
+  }, 800);
+}
+
+function generateAnswer(q, relevant) {
+  if (relevant.length === 0) {
+    return `<p>📭 知识库中暂未找到直接相关的条目。以下是一些建议：</p>
+    <ul style="margin-top:8px;color:var(--text-dim)">
+      <li>尝试用不同的关键词搜索</li>
+      <li>导入更多相关知识到知识库</li>
+      <li>你可以在微信中直接问我，我能给出更全面的回答</li>
+    </ul>`;
+  }
+  
+  const qLower = q.toLowerCase();
+  let answer = '';
+  
+  // Check for common questions
+  if (qLower.includes('飞溅') && (qLower.includes('优化') || qLower.includes('解决') || qLower.includes('高'))) {
+    answer = `<p><strong>🔧 飞溅优化核心步骤：</strong></p>
+    <ol>
+      <li><strong>数据收集</strong> — 每个焊点统计 ≥20 次焊接数据，按焊点/焊枪/区域分类</li>
+      <li><strong>四轮筛选法</strong>
+        <br>第1-2轮：选每个区域 5%-10% 最差焊点优化
+        <br>第3-4轮：调参数（电流↓、压力↑、时间调整）</li>
+      <li><strong>根因排查</strong>（四大维度 👇）
+        <br>🔥 钣金间隙过大 → 控制冲压精度
+        <br>🔥 结构胶气化 → 检查胶水溢出
+        <br>🔥 热失衡 → 三层板电流分配
+        <br>🔥 焊枪对中不良/压力漂移 → 校准</li>
+    </ol>`;
+  } else if (qLower.includes('涂胶') || qLower.includes('胶')) {
+    answer = `<p><strong>🧪 涂胶工艺要点：</strong></p>
+    <ul>
+      <li>涂胶台角度 ≤ 30°</li>
+      <li>拉涂模式，胶枪倾斜 3°</li>
+      <li>挤涂：胶嘴距离 = 胶段直径</li>
+      <li>喷涂：胶嘴距离 = 3-8mm</li>
+      <li>开关胶前后第一个过渡点必须为 LIN</li>
+      <li>LIN 必须有 CONT 指令</li>
+    </ul>`;
+  } else if (qLower.includes('直径') || qLower.includes('焊核') || qLower.includes('压痕')) {
+    answer = `<p><strong>📊 焊接质量标准：</strong></p>
+    <ul>
+      <li><strong>焊接直径 dp</strong> = 2 × tmin + 3（tmin = 薄板厚度）</li>
+      <li><strong>压痕深度</strong> ≤ 板层总厚度的 40%</li>
+      <li>焊点厚度 ≥ 总板层厚度的 60%</li>
+    </ul>`;
+  } else if (qLower.includes('重焊') || qLower.includes('err_re')) {
+    answer = `<p><strong>🔄 自动重焊配置：</strong></p>
+    <ol>
+      <li>登录专家权限</li>
+      <li>ERR_REPAT 改为 #Q_STOP（Q-Stop报错后重焊）</li>
+      <li>MAX_REPEAT_AFTER_ERR 改为 1</li>
+      <li>Reset fault and Reweld 信号 true</li>
+    </ol>`;
+  } else if (qLower.includes('fds') || qLower.includes('流钻') || qLower.includes('深度')) {
+    answer = `<p><strong>🔩 FDS/流钻故障排查：</strong></p>
+    <ul>
+      <li>"超出最大深度" → 检查磁环是否碎裂</li>
+      <li>深度零位标定值异常变小 → 磁环损坏信号</li>
+      <li>更换磁环后重新深度零点标定即可恢复</li>
+    </ul>`;
+  } else if (qLower.includes('world') || qLower.includes('坐标系') || qLower.includes('fanuc')) {
+    answer = `<p><strong>🤖 FANUC World Frame 异常处理：</strong></p>
+    <ol>
+      <li>找参考点记录错误坐标</li>
+      <li>正确标零后移动到同一点记录正确坐标</li>
+      <li>计算 ΔX/ΔY/ΔZ/ΔW/ΔP/ΔR</li>
+      <li>在坐标系设置界面修改用户坐标系</li>
+    </ol>`;
+  } else {
+    // General answer from relevant articles
+    answer = `<p>📚 找到 <strong>${relevant.length}</strong> 篇相关条目：</p>
+    <ul>${relevant.slice(0, 3).map(a => `<li><strong>${a.title}</strong> — ${(a.content || '').replace(/<[^>]+>/g,'').substring(0, 120)}...</li>`).join('')}</ul>
+    <p style="margin-top:8px;color:var(--text-dim)">💡 点击知识条目查看完整内容，或在微信中向我提问获取更详细的解答。</p>`;
+  }
+  return answer;
+}
+
+// ======================== TOAST ========================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show';
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ======================== START ========================
+init();
+</script>
+</body>
+</html>

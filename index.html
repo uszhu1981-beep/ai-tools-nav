@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI工具导航 · 每日评测 · 每周测评</title>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans SC",sans-serif;
+            background:#0a0e17;color:#e0e6f0;line-height:1.6;min-height:100vh
+        }
+        a{color:#6c8cff;text-decoration:none;transition:color .2s}
+        a:hover{color:#8aa8ff}
+        ::-webkit-scrollbar{width:6px}
+        ::-webkit-scrollbar-track{background:#141b2d}
+        ::-webkit-scrollbar-thumb{background:#2a3550;border-radius:3px}
+        .container{max-width:1320px;margin:0 auto;padding:0 24px}
+
+        /* Header */
+        .header{
+            position:sticky;top:0;z-index:100;
+            background:rgba(10,14,23,.85);backdrop-filter:blur(16px);
+            border-bottom:1px solid rgba(108,140,255,.08);padding:14px 0
+        }
+        .header .container{display:flex;align-items:center;justify-content:space-between}
+        .logo{
+            display:flex;align-items:center;gap:10px;
+            font-size:22px;font-weight:700;
+            background:linear-gradient(135deg,#6c8cff,#a78bfa);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+        }
+        .logo-icon{
+            width:32px;height:32px;border-radius:8px;
+            background:linear-gradient(135deg,#6c8cff,#a78bfa);
+            display:flex;align-items:center;justify-content:center;
+            color:#fff;font-size:18px;-webkit-text-fill-color:#fff
+        }
+        .nav{display:flex;gap:28px;align-items:center}
+        .nav a{font-size:14px;color:#8892b0}
+        .nav a:hover{color:#6c8cff}
+
+        /* Hero */
+        .hero{
+            padding:80px 0 60px;text-align:center;
+            background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(108,140,255,.08) 0%,transparent 70%)
+        }
+        .hero h1{font-size:44px;font-weight:800;margin-bottom:16px}
+        .hero h1 span{background:linear-gradient(135deg,#6c8cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero p{font-size:18px;color:#8892b0;max-width:600px;margin:0 auto 32px}
+        .search-box{
+            display:flex;max-width:520px;margin:0 auto;
+            background:#141b2d;border:1px solid #1e2840;border-radius:12px;
+            overflow:hidden;transition:border-color .3s
+        }
+        .search-box:focus-within{border-color:#6c8cff}
+        .search-box input{
+            flex:1;padding:14px 20px;background:transparent;border:none;
+            color:#e0e6f0;font-size:15px;outline:none
+        }
+        .search-box input::placeholder{color:#4a5578}
+        .search-box button{
+            padding:14px 24px;background:#6c8cff;border:none;
+            color:#fff;font-size:14px;font-weight:600;cursor:pointer
+        }
+        .search-box button:hover{background:#5a7ae8}
+
+        /* Section */
+        .section-title{
+            display:flex;align-items:center;gap:12px;
+            font-size:22px;font-weight:700;margin-bottom:24px;flex-wrap:wrap
+        }
+        .section-title .badge{
+            font-size:12px;font-weight:600;padding:2px 10px;
+            border-radius:20px;background:rgba(108,140,255,.15);color:#6c8cff
+        }
+        .section-title .update-info{font-size:12px;font-weight:400;color:#4a5578;margin-left:auto}
+        .section{padding:50px 0}
+        .section:nth-child(even){background:rgba(20,27,45,.4)}
+
+        /* Tools Grid */
+        .tool-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+            gap:16px
+        }
+        .tool-card{
+            background:#121827;border:1px solid #1e2840;border-radius:12px;
+            padding:20px 16px;text-align:center;
+            transition:all .25s ease;cursor:pointer
+        }
+        .tool-card:hover{
+            border-color:#6c8cff;transform:translateY(-4px);
+            box-shadow:0 8px 30px rgba(108,140,255,.1)
+        }
+        .tool-card .icon{
+            width:44px;height:44px;margin:0 auto 12px;
+            border-radius:10px;display:flex;align-items:center;justify-content:center;
+            font-size:20px
+        }
+        .tool-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+        .tool-card p{font-size:12px;color:#4a5578}
+
+        .cat-chat .icon{background:rgba(108,140,255,.15);color:#6c8cff}
+        .cat-image .icon{background:rgba(167,139,250,.15);color:#a78bfa}
+        .cat-code .icon{background:rgba(52,211,153,.15);color:#34d399}
+        .cat-video .icon{background:rgba(251,146,60,.15);color:#fb923c}
+        .cat-audio .icon{background:rgba(244,63,94,.15);color:#f43f5e}
+        .cat-productivity .icon{background:rgba(56,189,248,.15);color:#38bdf8}
+        .cat-other .icon{background:rgba(250,204,21,.15);color:#facc15}
+
+        /* Reviews */
+        .review-list{display:flex;flex-direction:column;gap:14px}
+        .review-item{
+            display:flex;gap:16px;align-items:flex-start;
+            padding:16px 20px;background:#121827;border:1px solid #1e2840;
+            border-radius:10px;transition:border-color .2s
+        }
+        .review-item:hover{border-color:#6c8cff}
+        .review-date{
+            font-size:12px;color:#4a5578;white-space:nowrap;min-width:72px;padding-top:2px
+        }
+        .review-content{flex:1}
+        .review-content h4{font-size:15px;font-weight:600;margin-bottom:4px}
+        .review-content p{font-size:13px;color:#8892b0}
+        .review-content .tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+        .review-content .tags span{
+            font-size:11px;padding:2px 8px;border-radius:4px;
+            background:rgba(108,140,255,.1);color:#6c8cff
+        }
+
+        /* Weekly */
+        .weekly-main{
+            background:linear-gradient(135deg,#121827 0%,#1a2340 100%);
+            border:1px solid #1e2840;border-radius:14px;padding:28px 32px
+        }
+        .weekly-header{
+            display:flex;justify-content:space-between;align-items:center;
+            margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #1e2840;
+            flex-wrap:wrap;gap:8px
+        }
+        .weekly-header h3{font-size:18px;font-weight:700}
+        .weekly-header .week-badge{font-size:12px;color:#4a5578}
+        .weekly-score{display:flex;gap:32px;flex-wrap:wrap;margin-bottom:20px}
+        .score-item{text-align:center}
+        .score-item .value{
+            font-size:28px;font-weight:800;
+            background:linear-gradient(135deg,#6c8cff,#a78bfa);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+        }
+        .score-item .label{font-size:12px;color:#4a5578;margin-top:2px}
+        .weekly-detail p{font-size:13px;color:#8892b0;line-height:1.8}
+
+        /* Footer */
+        .footer{margin-top:60px;padding:40px 0 30px;border-top:1px solid #1e2840}
+        .ad-slots{
+            display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            gap:16px;margin-bottom:32px
+        }
+        .ad-slot{
+            background:#121827;border:1px dashed #1e2840;border-radius:10px;
+            padding:28px 20px;text-align:center;min-height:120px;
+            display:flex;flex-direction:column;align-items:center;justify-content:center
+        }
+        .ad-slot:hover{border-color:#6c8cff;border-style:solid}
+        .ad-slot .ad-label{font-size:10px;font-weight:600;letter-spacing:1px;color:#2a3550;text-transform:uppercase;margin-bottom:8px}
+        .ad-slot .ad-placeholder{font-size:14px;color:#4a5578}
+        .ad-slot .ad-contact{font-size:12px;color:#6c8cff;margin-top:8px}
+        .footer-bottom{
+            display:flex;justify-content:space-between;align-items:center;
+            flex-wrap:wrap;gap:12px;padding-top:20px;border-top:1px solid #141b2d;
+            font-size:13px;color:#4a5578
+        }
+
+        /* Status */
+        .status-bar{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:-12px;margin-bottom:12px}
+        .status-item{font-size:12px;color:#4a5578;display:flex;align-items:center;gap:6px}
+        .status-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+        .status-dot.green{background:#34d399;animation:pulse-dot 2s infinite}
+        .status-dot.blue{background:#38bdf8;animation:pulse-dot 2s infinite .3s}
+        .status-dot.purple{background:#a78bfa;animation:pulse-dot 2s infinite .6s}
+        @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+        .generated-at{text-align:center;font-size:11px;color:#2a3550;margin-bottom:8px}
+
+        @media(max-width:768px){
+            .hero h1{font-size:30px}
+            .hero p{font-size:15px}
+            .nav{display:none}
+            .tool-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+        }
+        @media(max-width:480px){
+            .tool-grid{grid-template-columns:repeat(2,1fr)}
+            .review-item{flex-direction:column;gap:6px}
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="container">
+        <div class="logo"><span class="logo-icon">AI</span>AI工具导航</div>
+        <nav class="nav">
+            <a href="#tools">工具</a>
+            <a href="#daily">每日评测</a>
+            <a href="#weekly">每周测评</a>
+            <a href="#footer">商务合作</a>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <h1>发现 <span>AI</span> 的力量</h1>
+        <p>聚合最前沿的 AI 工具、每日深度评测与每周工作效能报告，让你的工作流始终领先一步。</p>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜索 AI 工具（如 ChatGPT、Midjourney...）" oninput="filterTools()">
+            <button onclick="filterTools()">搜索</button>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="status-bar">
+        <span class="status-item"><span class="status-dot green"></span> 每日评测 · 今日已更新</span>
+        <span class="status-item"><span class="status-dot blue"></span> 工具库 · 41 款收录</span>
+        <span class="status-item"><span class="status-dot purple"></span> 每周测评 · 本周已发布</span>
+    </div>
+    <div class="generated-at">数据采集于 2026-07-12 08:00:27</div>
+</div>
+
+<section class="section" id="tools">
+    <div class="container">
+        <div class="section-title">
+            <span>🧰 AI 工具大全</span>
+            <span class="badge">实时更新</span>
+            <span class="update-info">共 41 款工具</span>
+        </div>
+        <div class="tool-grid">
+            <div class="tool-card cat-chat"><div class="icon">💬</div><h3>ChatGPT</h3><p>OpenAI 旗舰对话式 AI</p></div>
+            <div class="tool-card cat-chat"><div class="icon">🤖</div><h3>Claude</h3><p>Anthropic 安全可信 AI</p></div>
+            <div class="tool-card cat-chat"><div class="icon">🧠</div><h3>DeepSeek</h3><p>深度求索推理模型</p></div>
+            <div class="tool-card cat-chat"><div class="icon">✨</div><h3>Gemini</h3><p>Google 多模态大模型</p></div>
+            <div class="tool-card cat-chat"><div class="icon">🚀</div><h3>Grok</h3><p>xAI 实时知识助手</p></div>
+            <div class="tool-card cat-chat"><div class="icon">📘</div><h3>Kimi</h3><p>月之暗面长文本助手</p></div>
+            <div class="tool-card cat-chat"><div class="icon">🌊</div><h3>通义千问</h3><p>阿里云超大模型</p></div>
+            <div class="tool-card cat-chat"><div class="icon">📖</div><h3>文心一言</h3><p>百度知识增强大模型</p></div>
+            <div class="tool-card cat-chat"><div class="icon">🟢</div><h3>豆包</h3><p>字节跳动 AI 助手</p></div>
+            <div class="tool-card cat-image"><div class="icon">🎨</div><h3>Midjourney</h3><p>顶级 AI 艺术创作</p></div>
+            <div class="tool-card cat-image"><div class="icon">🖼️</div><h3>DALL·E 3</h3><p>OpenAI 文生图模型</p></div>
+            <div class="tool-card cat-image"><div class="icon">🌈</div><h3>Stable Diffusion</h3><p>开源图像生成</p></div>
+            <div class="tool-card cat-image"><div class="icon">⚡</div><h3>ComfyUI</h3><p>节点式 AI 工作流</p></div>
+            <div class="tool-card cat-image"><div class="icon">🔥</div><h3>Flux</h3><p>Black Forest Lab 新锐</p></div>
+            <div class="tool-card cat-image"><div class="icon">✏️</div><h3>Canva AI</h3><p>在线设计 + AI 生成</p></div>
+            <div class="tool-card cat-image"><div class="icon">🎯</div><h3>Recraft</h3><p>矢量 & 品牌设计 AI</p></div>
+            <div class="tool-card cat-code"><div class="icon">💻</div><h3>GitHub Copilot</h3><p>AI 结对编程助手</p></div>
+            <div class="tool-card cat-code"><div class="icon">🖥️</div><h3>Cursor</h3><p>AI-first IDE</p></div>
+            <div class="tool-card cat-code"><div class="icon">🏄</div><h3>Windsurf</h3><p>代理式 AI 编程</p></div>
+            <div class="tool-card cat-code"><div class="icon">🔧</div><h3>Claude Code</h3><p>终端内 AI 开发工具</p></div>
+            <div class="tool-card cat-code"><div class="icon">⚙️</div><h3>Codeium</h3><p>免费 AI 代码补全</p></div>
+            <div class="tool-card cat-code"><div class="icon">🔄</div><h3>Replit Agent</h3><p>浏览器端全栈 AI 开发</p></div>
+            <div class="tool-card cat-video"><div class="icon">🎬</div><h3>Sora</h3><p>OpenAI 视频生成</p></div>
+            <div class="tool-card cat-video"><div class="icon">🎥</div><h3>Runway Gen-3</h3><p>专业 AI 视频工具</p></div>
+            <div class="tool-card cat-video"><div class="icon">⭐</div><h3>Pika</h3><p>创意视频生成平台</p></div>
+            <div class="tool-card cat-video"><div class="icon">🎞️</div><h3>Kling</h3><p>可灵 AI 视频生成</p></div>
+            <div class="tool-card cat-video"><div class="icon">👤</div><h3>HeyGen</h3><p>AI 数字人视频</p></div>
+            <div class="tool-card cat-audio"><div class="icon">🎙️</div><h3>ElevenLabs</h3><p>超逼真 AI 语音</p></div>
+            <div class="tool-card cat-audio"><div class="icon">🎵</div><h3>Suno</h3><p>AI 音乐生成</p></div>
+            <div class="tool-card cat-audio"><div class="icon">🎶</div><h3>Udio</h3><p>高质量 AI 作曲</p></div>
+            <div class="tool-card cat-audio"><div class="icon">🎧</div><h3>Whisper</h3><p>OpenAI 语音识别</p></div>
+            <div class="tool-card cat-productivity"><div class="icon">📝</div><h3>Notion AI</h3><p>智能笔记 & 协作</p></div>
+            <div class="tool-card cat-productivity"><div class="icon">🔍</div><h3>Perplexity</h3><p>AI 搜索引擎</p></div>
+            <div class="tool-card cat-productivity"><div class="icon">✍️</div><h3>Grammarly</h3><p>AI 写作优化</p></div>
+            <div class="tool-card cat-productivity"><div class="icon">📊</div><h3>Gamma</h3><p>AI 生成演示文稿</p></div>
+            <div class="tool-card cat-productivity"><div class="icon">🗣️</div><h3>Otter.ai</h3><p>AI 会议转录</p></div>
+            <div class="tool-card cat-productivity"><div class="icon">📈</div><h3>Beautiful.ai</h3><p>AI 智能幻灯片</p></div>
+            <div class="tool-card cat-other"><div class="icon">🤗</div><h3>HuggingFace</h3><p>开源模型社区</p></div>
+            <div class="tool-card cat-other"><div class="icon">🔬</div><h3>Replicate</h3><p>云端模型运行平台</p></div>
+            <div class="tool-card cat-other"><div class="icon">🗂️</div><h3>Poe</h3><p>多模型聚合平台</p></div>
+            <div class="tool-card cat-other"><div class="icon">🦁</div><h3>Leonardo AI</h3><p>游戏素材 AI 生成</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="daily">
+    <div class="container">
+        <div class="section-title">
+            <span>📰 每日 AI 评测</span>
+            <span class="badge">今日更新</span>
+            <span class="update-info">更新于 2026-07-12 08:00</span>
+        </div>
+        <div class="review-list">
+            <div class="review-item"><div class="review-date">7/12</div><div class="review-content"><h4>📄 UniClawBench: A Universal Benchmark for Proactive Agents on …</h4><p>新论文 — Zhekai Chen, Chengqi Duan | The rapid development of large language models and multimodal large language models has accelerated the emergence of pro…</p><div class="tags"><span>Arxiv</span><span>论文</span><span>Lora</span></div></div></div>
+            <div class="review-item"><div class="review-date">7/11</div><div class="review-content"><h4>📄 OpenCoF: Learning to Reason Through Video Generation</h4><p>新论文 — Xinyan Chen, Ziyu Guo | Reasoning has become a core capability for large models, especially when reliable decisions require understanding logica…</p><div class="tags"><span>Arxiv</span><span>论文</span><span>attention</span></div></div></div>
+            <div class="review-item"><div class="review-date">7/10</div><div class="review-content"><h4>📄 Ideas Have Genomes: Benchmarking Scientific Lineage Reasonin…</h4><p>新论文 — Yifan Zhou, Qihao Yang | Scientific ideas rarely start from a blank page. They inherit mechanisms, repair known limitations, and recombine pieces…</p><div class="tags"><span>Arxiv</span><span>论文</span></div></div></div>
+            <div class="review-item"><div class="review-date">7/9</div><div class="review-content"><h4>📄 Score Accuracy Along the Forward Diffusion Does Not Certify …</h4><p>新论文 — Yiwei Zhou | Score matching controls average error under the forward marginals, but a discretized reverse-time sampler evaluates the …</p><div class="tags"><span>Arxiv</span><span>论文</span><span>RAG</span></div></div></div>
+            <div class="review-item"><div class="review-date">7/8</div><div class="review-content"><h4>🔥 Don't post generated/AI-edited comments. HN is for conversat…</h4><p>HackerNews 热点 · 4229 票 · @usefulposter</p><div class="tags"><span>社区热议</span><span>HackerNews</span></div></div></div>
+            <div class="review-item"><div class="review-date">7/7</div><div class="review-content"><h4>🔥 Airfoil</h4><p>HackerNews 热点 · 2544 票 · @todsacerdoti</p><div class="tags"><span>社区热议</span><span>HackerNews</span></div></div></div>
+            <div class="review-item"><div class="review-date">7/6</div><div class="review-content"><h4>🔥 Open source AI is the path forward</h4><p>HackerNews 热点 · 2360 票 · @atgctg</p><div class="tags"><span>社区热议</span><span>HackerNews</span></div></div></div>
+            <div class="review-item"><div class="review-date">7/5</div><div class="review-content"><h4>🔥 My AI skeptic friends are all nuts</h4><p>HackerNews 热点 · 2356 票 · @tabletcorry</p><div class="tags"><span>社区热议</span><span>HackerNews</span></div></div></div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="deep">
+    <div class="container">
+        <div class="section-title">
+            <span>🔭 深度新闻 · RSS 聚合</span>
+            <span class="badge">实时抓取</span>
+            <span class="update-info">更新于 2026-07-12 · 来源见条目标签</span>
+        </div>
+        <div class="review-list">
+            <div class="review-item"><div class="review-date">机器之心</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&amp;mid=2651043311&amp;idx=1&amp;sn=a63039b3ed0a386ac5ae821361873a90" target="_blank" rel="noopener">最适合机器人的视频基座模型，被中国团队开源了</a></h4><p>最适合机器人的视频基座模型，被中国团队开源了</p><div class="tags"><span>AI深度</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">机器之心</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&amp;mid=2651043861&amp;idx=1&amp;sn=86f859794865aa73a9613abaacd0b035" target="_blank" rel="noopener">顶会Poster整活大赛：我的NeurlPS论文中了ICML</a></h4><p>顶会Poster整活大赛：我的NeurlPS论文中了ICML</p><div class="tags"><span>AI深度</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">量子位</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzIzNjc1NzUzMw==&amp;mid=2247902908&amp;idx=1&amp;sn=fd58bf49c7457883c066349b34efa753" target="_blank" rel="noopener">7月14日悉尼，我们在RSS'26攒了个晚宴</a></h4><p>7月14日悉尼，我们在RSS'26攒了个晚宴</p><div class="tags"><span>AI深度</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">量子位</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzIzNjc1NzUzMw==&amp;mid=2247902907&amp;idx=1&amp;sn=bba40f0d35dec45a85f247617461ddb3" target="_blank" rel="noopener">邓文迪&amp;默多克爱女入职Devin，豪门二代优先去AI公司镀金了</a></h4><p>邓文迪&amp;默多克爱女入职Devin，豪门二代优先去AI公司镀金了</p><div class="tags"><span>AI深度</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">新智元</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&amp;mid=2652712421&amp;idx=1&amp;sn=6f18bf641811ee72e6fd4e8c62ec95ca" target="_blank" rel="noopener">GPT-5.6被曝重大bug！硅谷大佬Mac被一键清空</a></h4><p>GPT-5.6被曝重大bug！硅谷大佬Mac被一键清空</p><div class="tags"><span>AI深度</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">新智元</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&amp;mid=2652712421&amp;idx=2&amp;sn=6e68954e988a9b4fce89e1e60c21233d" target="_blank" rel="noopener">Claude出了个「防沉迷」，却可能让你更离不开它</a></h4><p>Claude出了个「防沉迷」，却可能让你更离不开它</p><div class="tags"><span>AI深度</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">甲子光年</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzU5OTI0NTc3Mg==&amp;mid=2247555311&amp;idx=1&amp;sn=73bc352573081cadcf365a079e8f8d99" target="_blank" rel="noopener">孙傲然：父母是道士，学易经，我用AI预测投研|甲子光年</a></h4><p>孙傲然：父母是道士，学易经，我用AI预测投研|甲子光年</p><div class="tags"><span>AI深度</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">甲子光年</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzU5OTI0NTc3Mg==&amp;mid=2247555310&amp;idx=2&amp;sn=6ae50eb5231289b97d48ef5d432189ea" target="_blank" rel="noopener">十万卡”落地成双，AI新基建跃入超级周期一甲子光年</a></h4><p>十万卡”落地成双，AI新基建跃入超级周期一甲子光年</p><div class="tags"><span>AI深度</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">晚点LatePost</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzU3Mjk1OTQ0Ng==&amp;mid=2247537295&amp;idx=1&amp;sn=e20f8885b3cdc220c70eb81ba30b4a36" target="_blank" rel="noopener">晚点独家|唐杰内部信称将开启TouchHigh（摸高)计划，“不登顶，就是失败</a></h4><p>晚点独家|唐杰内部信称将开启TouchHigh（摸高)计划，“不登顶，就是失败</p><div class="tags"><span>科技商业</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">晚点LatePost</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzU3Mjk1OTQ0Ng==&amp;mid=2247537274&amp;idx=2&amp;sn=2870933198e5a715e3d91d6f874e9a1d" target="_blank" rel="noopener">错位博弈</a></h4><p>错位博弈</p><div class="tags"><span>科技商业</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">36氪</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzI2NDk5NzA0Mw==&amp;mid=2248894482&amp;idx=1&amp;sn=b1d090d3e71ec2cc34d44879dc310d06" target="_blank" rel="noopener">AI 砍掉的第一批大厂人：高薪，高绩效，高PI深氪</a></h4><p>AI 砍掉的第一批大厂人：高薪，高绩效，高PI深氪</p><div class="tags"><span>科技商业</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">36氪</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MzI2NDk5NzA0Mw==&amp;mid=2248894669&amp;idx=1&amp;sn=a1accbc8f2f8fdaddacf74488142b0c5" target="_blank" rel="noopener">揭秘字节Seedance：全球AI的第二个好生意|深氪</a></h4><p>揭秘字节Seedance：全球AI的第二个好生意|深氪</p><div class="tags"><span>科技商业</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">虎嗅</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&amp;mid=2656185876&amp;idx=1&amp;sn=3be6b1c4a3ae2fa3714473f9c4aaa6db" target="_blank" rel="noopener">“高大上”的管培生，坑了多少大学生</a></h4><p>“高大上”的管培生，坑了多少大学生</p><div class="tags"><span>科技商业</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">虎嗅</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&amp;mid=2656185876&amp;idx=2&amp;sn=43c0512f0f5b1934f578653eb2bd5d46" target="_blank" rel="noopener">李斌的2026，只剩这张底牌</a></h4><p>李斌的2026，只剩这张底牌</p><div class="tags"><span>科技商业</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">极客公园</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MTMwNDMwODQ0MQ==&amp;mid=2653110392&amp;idx=1&amp;sn=91b7fdf18d642132225c4a8b0d8d3c32" target="_blank" rel="noopener">Claude又有意识了？不，它没有</a></h4><p>Claude又有意识了？不，它没有</p><div class="tags"><span>科技商业</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">极客公园</div><div class="review-content"><h4><a href="https://mp.weixin.qq.com/s?__biz=MTMwNDMwODQ0MQ==&amp;mid=2653110397&amp;idx=1&amp;sn=a5286203c44b114e23db174a4948fccb" target="_blank" rel="noopener">为了「AliPhone」，苹果正式起诉OpenAl</a></h4><p>为了「AliPhone」，苹果正式起诉OpenAl</p><div class="tags"><span>科技商业</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">少数派</div><div class="review-content"><h4><a href="https://sspai.com/post/68024" target="_blank" rel="noopener">暴雨和洪涝的季节，这些技巧助你从容自保</a></h4><p>面对暴雨、内涝等自然灾害，你应该做什么准备？有人溺水时，该如何正确救援？这篇文章帮你掌握一些必要的知识，面对危情不再慌乱。查看全文</p><div class="tags"><span>效率生活</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">少数派</div><div class="review-content"><h4><a href="https://sspai.com/post/112169" target="_blank" rel="noopener">本周看什么 | 最近值得一看的 8 部作品</a></h4><p>📅本周新预告《恐怖游轮》内地定档7月17日7月8日，电影《恐怖游轮》发布了中国内地定档预告，将于7月17日上映。克里斯托弗·史密斯执导、编剧，梅利莎·乔治主演，单亲母亲杰西和一帮朋友乘游艇出海游玩，但 ...查看全文</p><div class="tags"><span>效率生活</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">爱范儿</div><div class="review-content"><h4><a href="https://www.ifanr.com/1671681?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=" target="_blank" rel="noopener">早报｜苹果起诉OpenAI/努比亚倪飞披露AI智能体手机细节/小米澎程N90升降车顶曝光</a></h4><p>· 大众计划削减一半车型线，全球裁员规模或达 12 万人 · 扎克伯格否认 Meta 算力过剩：没人会嫌算力太多 · 宇树 G1 机器人完成两例活体手术，登上《自然》#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。</p><div class="tags"><span>效率生活</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">爱范儿</div><div class="review-content"><h4><a href="https://www.ifanr.com/1671618?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=" target="_blank" rel="noopener">百度搭子重新定义 Agent「托付半径」</a></h4><p>Agent 的赛点是交付，边界是人#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。</p><div class="tags"><span>效率生活</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">The Verge</div><div class="review-content"><h4><a href="https://www.theverge.com/gadgets/964499/nopia-viral-synth-finished-price-release-demo" target="_blank" rel="noopener">After years of teasing, the viral Nopia synth is ‘basically finished’</a></h4><p>After setting the music gear corner of the internet on fire back in 2023 with the first glimpse at the Nopia, creators Martin Grieco and Roc&amp;#237;o Gal are almo</p><div class="tags"><span>英文资讯</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">The Verge</div><div class="review-content"><h4><a href="https://www.theverge.com/policy/964493/oregons-ag-delay-paramount-warner-bros-merger" target="_blank" rel="noopener">Oregon’s Attorney General withdraws effort to delay Paramount and Warner Bros. merger</a></h4><p>Oregon Attorney General Dan Rayfield had been seeking documents from Paramount related to its takeover of Warner Bros. Discovery. Rayfield also asked a state ci</p><div class="tags"><span>英文资讯</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">TechCrunch AI</div><div class="review-content"><h4><a href="https://techcrunch.com/2026/07/11/openai-bets-on-families-as-chatgpt-goes-deeper-into-households/" target="_blank" rel="noopener">OpenAI bets on families as ChatGPT goes deeper into households</a></h4><p>ChatGPT is hiring a dedicated product manager to build experiences for families, caregivers, and older adults, according to a job posting.</p><div class="tags"><span>英文资讯</span><span>深度</span></div></div></div>
+            <div class="review-item"><div class="review-date">TechCrunch AI</div><div class="review-content"><h4><a href="https://techcrunch.com/2026/07/10/meta-removes-controversial-ai-feature-on-instagram-after-backlash/" target="_blank" rel="noopener">Meta removes controversial AI feature on Instagram after backlash</a></h4><p>&quot;Our intent was to provide a useful creative tool and to give people control over whether their public content could be referenced in this way,&quot; the company sai</p><div class="tags"><span>英文资讯</span><span>深度</span></div></div></div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="weekly">
+    <div class="container">
+        <div class="section-title">
+            <span>📊 每周工作测评</span>
+            <span class="badge">周报</span>
+            <span class="update-info">更新于 7/6 - 7/12</span>
+        </div>
+        <div class="weekly-main">
+            <div class="weekly-header">
+                <h3>🔬 开源模型突破周</h3>
+                <span class="week-badge">📅 第 28 周 · 7/6 - 7/12 · 测评周期：周一至周日</span>
+            </div>
+            <div class="weekly-score"><div class="score-item"><div class="value">88</div><div class="label">整体效率</div></div>
+                <div class="score-item"><div class="value">90</div><div class="label">工具适配</div></div>
+                <div class="score-item"><div class="value">87</div><div class="label">创意产出</div></div>
+                <div class="score-item"><div class="value">89</div><div class="label">满意度</div></div></div>
+            <div class="weekly-detail"><p>DeepSeek V4 / Llama 4 / Qwen 3 等开源模型在本周密集发布，本地部署推理成本降至新低。小团队自建 AI 工作流的门槛正在快速消失。</p></div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer" id="footer">
+    <div class="container">
+        <div class="section-title">
+            <span>📢 广告合作</span>
+            <span class="badge">招商中</span>
+        </div>
+        <div class="ad-slots">
+            <div class="ad-slot">
+                <div class="ad-label">广告位 A</div>
+                <div class="ad-placeholder">🔥 黄金展示位 · 品牌曝光</div>
+                <div class="ad-contact">联系：ad@aitoolsnav.com</div>
+            </div>
+            <div class="ad-slot">
+                <div class="ad-label">广告位 B</div>
+                <div class="ad-placeholder">🚀 产品推广 · 精准触达</div>
+                <div class="ad-contact">联系：ad@aitoolsnav.com</div>
+            </div>
+            <div class="ad-slot">
+                <div class="ad-label">广告位 C</div>
+                <div class="ad-placeholder">💼 商务合作 · 定制方案</div>
+                <div class="ad-contact">联系：ad@aitoolsnav.com</div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 AI工具导航 · 聚合 · 评测 · 测评</span>
+            <span>数据来源：Arxiv / HackerNews 自动采集 | <a href="#">隐私政策</a></span>
+        </div>
+    </div>
+</footer>
+
+<script>
+const TOOLS = [{"n": "ChatGPT"}, {"n": "Claude"}, {"n": "DeepSeek"}, {"n": "Gemini"}, {"n": "Grok"}, {"n": "Kimi"}, {"n": "通义千问"}, {"n": "文心一言"}, {"n": "豆包"}, {"n": "Midjourney"}, {"n": "DALL·E 3"}, {"n": "Stable Diffusion"}, {"n": "ComfyUI"}, {"n": "Flux"}, {"n": "Canva AI"}, {"n": "Recraft"}, {"n": "GitHub Copilot"}, {"n": "Cursor"}, {"n": "Windsurf"}, {"n": "Claude Code"}, {"n": "Codeium"}, {"n": "Replit Agent"}, {"n": "Sora"}, {"n": "Runway Gen-3"}, {"n": "Pika"}, {"n": "Kling"}, {"n": "HeyGen"}, {"n": "ElevenLabs"}, {"n": "Suno"}, {"n": "Udio"}, {"n": "Whisper"}, {"n": "Notion AI"}, {"n": "Perplexity"}, {"n": "Grammarly"}, {"n": "Gamma"}, {"n": "Otter.ai"}, {"n": "Beautiful.ai"}, {"n": "HuggingFace"}, {"n": "Replicate"}, {"n": "Poe"}, {"n": "Leonardo AI"}];
+function filterTools(){
+    const q=document.getElementById('searchInput').value.toLowerCase().trim();
+    document.querySelectorAll('.tool-card').forEach(c=>{
+        const n=c.querySelector('h3').textContent.toLowerCase();
+        const d=c.querySelector('p').textContent.toLowerCase();
+        c.style.display=(!q||n.includes(q)||d.includes(q))?'':'none';
+    });
+}
+</script>
+</body>
+</html>
