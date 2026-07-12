@@ -228,6 +228,8 @@ def fetch_arxiv_papers(max_results=8):
                 "summary": summary.text.strip().replace("\n", " ") if summary is not None else "",
                 "published": published.text[:10] if published is not None else "",
                 "authors": [a.text for a in authors] if authors else [],
+                "url": (entry.find("atom:id", ns).text.strip()
+                        if entry.find("atom:id", ns) is not None else ""),
             })
     except ET.ParseError as e:
         print(f"  ⚠️  Arxiv XML 解析失败: {e}")
@@ -374,12 +376,12 @@ def make_daily_reviews(arxiv_papers, hn_stories):
 
     # 从 Arxiv 生成
     for i, p in enumerate(arxiv_papers):
-        title = p["title"][:60]
-        if len(title) == 60:
+        title = p["title"][:80]
+        if len(title) == 80:
             title += "…"
         # 提取核心关键词做标签
         tags = ["Arxiv", "论文"]
-        summary_words = p["summary"][:120]
+        summary_words = p["summary"][:160]
         for kw in ["模型", "训练", "数据", "推理", "生成", "transformer", "attention",
                     "RLHF", "RAG", "Lora", "对齐", "多模态", "视觉", "语言"]:
             if kw.lower() in p["summary"].lower() or kw.lower() in p["title"].lower():
@@ -390,6 +392,7 @@ def make_daily_reviews(arxiv_papers, hn_stories):
             "title": f"📄 {title}",
             "desc": f"新论文 — {', '.join(p['authors'][:2])} | {summary_words}…",
             "tags": tags[:3],
+            "url": p.get("url", ""),
         })
         if len(reviews) >= 4:
             break
@@ -398,27 +401,29 @@ def make_daily_reviews(arxiv_papers, hn_stories):
     for i, s in enumerate(hn_stories):
         if len(reviews) >= 8:
             break
-        title = s["title"][:60]
-        if len(title) == 60:
+        title = s["title"][:80]
+        if len(title) == 80:
             title += "…"
         reviews.append({
             "title": f"🔥 {title}",
             "desc": f"HackerNews 热点 · {s['points']} 票 · @{s['author']}",
             "tags": ["社区热议", "HackerNews"],
+            "url": s.get("url", ""),
         })
 
     # 用兜底补全到至少 6 条
     for fallback_title, fallback_desc, fallback_tags in FALLBACK_REVIEWS:
         if len(reviews) >= 6:
             break
-        reviews.append({"title": fallback_title, "desc": fallback_desc, "tags": fallback_tags})
+        reviews.append({"title": fallback_title, "desc": fallback_desc, "tags": fallback_tags, "url": ""})
 
     # 分配日期（从今天往前倒推）
     result = []
     for idx, r in enumerate(reviews[:8]):
         d = today - timedelta(days=idx)
         date_str = f"{d.month}/{d.day}"
-        result.append({"date": date_str, "title": r["title"], "desc": r["desc"], "tags": r["tags"]})
+        result.append({"date": date_str, "title": r["title"], "desc": r["desc"],
+                       "tags": r["tags"], "url": r.get("url", "")})
 
     return result
 
@@ -505,19 +510,32 @@ def render_tool_cards():
 
 
 def render_reviews(reviews):
-    """渲染评测条目 HTML."""
+    """渲染评测条目 HTML（整条可点击跳转原文，新标签页打开）。"""
     items = []
     for r in reviews:
         tags_html = "".join(f'<span>{t}</span>' for t in r["tags"][:3])
-        items.append(
-            f'<div class="review-item">'
-            f'<div class="review-date">{r["date"]}</div>'
-            f'<div class="review-content">'
-            f'<h4>{r["title"]}</h4>'
-            f'<p>{r["desc"]}</p>'
-            f'<div class="tags">{tags_html}</div>'
-            f"</div></div>"
-        )
+        url = r.get("url", "")
+        if url:
+            item = (
+                f'<a class="review-item" href="{esc_attr(url)}" target="_blank" rel="noopener">'
+                f'<div class="review-date">{r["date"]}</div>'
+                f'<div class="review-content">'
+                f'<h4>{r["title"]} <span class="ext">↗</span></h4>'
+                f'<p>{r["desc"]}</p>'
+                f'<div class="tags">{tags_html}</div>'
+                f"</div></a>"
+            )
+        else:
+            item = (
+                f'<div class="review-item">'
+                f'<div class="review-date">{r["date"]}</div>'
+                f'<div class="review-content">'
+                f'<h4>{r["title"]}</h4>'
+                f'<p>{r["desc"]}</p>'
+                f'<div class="tags">{tags_html}</div>'
+                f"</div></div>"
+            )
+        items.append(item)
     return "\n            ".join(items)
 
 
