@@ -441,16 +441,65 @@ def make_weekly_assessment():
 
 # ── HTML 渲染 ─────────────────────────────────────────────────────
 
+# ── 工具官网映射（点击卡片跳转）──
+# 统一用根域名/官网首页，规避子路径被 Cloudflare 反爬拦截。
+TOOL_URLS = {
+    "ChatGPT": "https://openai.com",
+    "Claude": "https://claude.ai",
+    "DeepSeek": "https://www.deepseek.com",
+    "Gemini": "https://gemini.google.com",
+    "Grok": "https://grok.com",
+    "Kimi": "https://kimi.moonshot.cn",
+    "通义千问": "https://tongyi.aliyun.com",
+    "文心一言": "https://yiyan.baidu.com",
+    "豆包": "https://www.doubao.com",
+    "Midjourney": "https://www.midjourney.com",
+    "DALL·E 3": "https://openai.com",
+    "Stable Diffusion": "https://stability.ai",
+    "ComfyUI": "https://www.comfy.org",
+    "Flux": "https://blackforestlabs.ai",
+    "Canva AI": "https://www.canva.com",
+    "Recraft": "https://www.recraft.ai",
+    "GitHub Copilot": "https://github.com/features/copilot",
+    "Cursor": "https://cursor.com",
+    "Windsurf": "https://windsurf.com",
+    "Claude Code": "https://claude.ai",
+    "Codeium": "https://codeium.com",
+    "Replit Agent": "https://replit.com",
+    "Sora": "https://openai.com",
+    "Runway Gen-3": "https://runwayml.com",
+    "Pika": "https://pika.art",
+    "Kling": "https://klingai.com",
+    "HeyGen": "https://www.heygen.com",
+    "ElevenLabs": "https://elevenlabs.io",
+    "Suno": "https://suno.com",
+    "Udio": "https://udio.com",
+    "Whisper": "https://openai.com",
+    "Notion AI": "https://www.notion.so/product/ai",
+    "Perplexity": "https://www.perplexity.ai",
+    "Grammarly": "https://www.grammarly.com",
+    "Gamma": "https://gamma.app",
+    "Otter.ai": "https://otter.ai",
+    "Beautiful.ai": "https://www.beautiful.ai",
+    "HuggingFace": "https://huggingface.co",
+    "Replicate": "https://replicate.com",
+    "Poe": "https://poe.com",
+    "Leonardo AI": "https://leonardo.ai",
+}
+
+
 def render_tool_cards():
-    """渲染工具卡片 HTML."""
+    """渲染工具卡片 HTML（可点击跳转官网，新标签页打开）。"""
     cards = []
     for t in TOOLS:
+        url = TOOL_URLS.get(t["n"], "#")
+        attr = f'href="{url}" target="_blank" rel="noopener"' if url != "#" else 'href="#"'
         cards.append(
-            f'<div class="tool-card cat-{t["c"]}">'
+            f'<a class="tool-card cat-{t["c"]}" {attr} data-name="{t["n"]}">'
             f'<div class="icon">{t["i"]}</div>'
             f'<h3>{t["n"]}</h3>'
             f'<p>{t["d"]}</p>'
-            f"</div>"
+            f"</a>"
         )
     return "\n            ".join(cards)
 
