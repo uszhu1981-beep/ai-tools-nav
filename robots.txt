@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://uszhu1981-beep.github.io/ai-tools-nav/sitemap.xml

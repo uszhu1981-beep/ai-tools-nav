@@ -727,6 +727,24 @@ def main():
     size_kb = os.path.getsize(OUTPUT_PATH) / 1024
     print(f"     ✅ 已写入 {OUTPUT_PATH} ({size_kb:.1f} KB)")
 
+    # 自动刷新 sitemap.xml 的 lastmod（供搜索引擎收录）
+    sitemap_path = BASE_DIR / "sitemap.xml"
+    today = datetime.now().strftime("%Y-%m-%d")
+    sitemap_xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        '  <url>\n'
+        '    <loc>https://uszhu1981-beep.github.io/ai-tools-nav/</loc>\n'
+        f'    <lastmod>{today}</lastmod>\n'
+        '    <changefreq>daily</changefreq>\n'
+        '    <priority>1.0</priority>\n'
+        '  </url>\n'
+        '</urlset>\n'
+    )
+    with open(sitemap_path, "w", encoding="utf-8") as f:
+        f.write(sitemap_xml)
+    print(f"     🗺️  已刷新 sitemap.xml (lastmod={today})")
+
     print(f"\n  ✅ 完成！运行耗时：{(datetime.now() - now).total_seconds():.1f}s")
     print("=" * 50)
 
