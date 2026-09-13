@@ -22,3 +22,10 @@ steel_dance/
 
 # ── 无关的焊接知识库（非本作品）──
 welding-kb.html
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
