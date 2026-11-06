@@ -48,6 +48,7 @@ TOOLS = [
     {"n": "Canva AI", "c": "image", "i": "✏️", "d": "在线设计 + AI 生成"},
     {"n": "Recraft", "c": "image", "i": "🎯", "d": "矢量 & 品牌设计 AI"},
     # Code
+    {"n": "agent-qa", "c": "code", "i": "🧪", "d": "自然语言 Web 与移动端测试，含 memidex 持久记忆与经验证的自我改进"},
     {"n": "GitHub Copilot", "c": "code", "i": "💻", "d": "AI 结对编程助手"},
     {"n": "Cursor", "c": "code", "i": "🖥️", "d": "AI-first IDE"},
     {"n": "Windsurf", "c": "code", "i": "🏄", "d": "代理式 AI 编程"},
@@ -459,6 +460,7 @@ def make_weekly_assessment():
 # ── 工具官网映射（点击卡片跳转）──
 # 统一用根域名/官网首页，规避子路径被 Cloudflare 反爬拦截。
 TOOL_URLS = {
+    "agent-qa": "https://vostride.com",
     "ChatGPT": "https://openai.com",
     "Claude": "https://claude.ai",
     "DeepSeek": "https://www.deepseek.com",
